@@ -82,11 +82,12 @@ findRepository()
 #Menu displayed when accessing a repo - allows user to take actions within the repo. 
 repositoryMenu()
 {
-	displayRepository
+	
 	local finished=1
 	echo 'Please enter your choice: '
 	while (( finished != 0 )); do
-	options=( "Create a New File" "Edit a File" "Rename a File" "Quit")
+	displayRepository
+	options=( "Create a New File" "Edit a File" "Rename a File" "Back to Main Menu")
 	select opt in "${options[@]}"
 	do
 	    case $opt in
@@ -94,7 +95,7 @@ repositoryMenu()
 	            createFile
 	            ;;
 	        "Edit a File")
-	            createRepository
+	            editFile
 	            ;;
 	        "Rename a File")
 	            echo "you chose choice 2"
@@ -115,18 +116,45 @@ displayRepository()
 	ls
 }
 
+
 #This method could be updated later to allow the user to select their own filetype
 createFile()
 {
-	echo "Please enter the name of the new file"
+	echo "Please enter the name of the new file: "
+	local fileName
 	read fileName
-	type=".txt"
+	local type=".txt"
+	completeName=$fileName$type
 
-	if [ -e $fileName$type ]
+	if [ -e $completeName > /dev/null 2>&1  ]
 	then
 	    echo "This File Already Exists"
 	else
-	    touch $fileName$type && echo "File Created"
+		if [[ "$completeName" =~ \ |\' ]] 
+		then
+			echo "File could not be created. File names may not contain spaces or single quotes"
+		else
+	    	touch $completeName
+	   		echo "File Created"
+		fi
 	fi
 }
+
+#Still needsa lot of work, do during lab
+editFile()
+{
+	echo "Please enter the name of the file to be edited: "
+	local fileName
+	read $fileName
+
+	if [ -e $fileName > /dev/null 2>&1  ]
+	then
+	   nano $fileName
+	else
+		echo "This file does not exist"
+	fi
+
+}
+
+
 mainMenu
