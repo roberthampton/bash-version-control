@@ -37,6 +37,10 @@ done
 createRepository()
 {
 	local success=1
+	if [ ! -d "Repositories" ]; then
+ 	mkdir Repositories
+    fi
+    cd Repositories
 	while [ $success -ne 0 ]
 	do
 		echo "please enter the name of the new repository"
@@ -66,7 +70,7 @@ findRepository()
 		echo "please enter the name of the repository you would like to access"
 		local repoName
 		read repoName
-		cd $repoName > /dev/null 2>&1 
+		cd Repositories/$repoName/ > /dev/null 2>&1 
 		local retVal=$?
 			if [ $retVal -ne 0 ]
 			then
@@ -82,7 +86,7 @@ findRepository()
 #Menu displayed when accessing a repo - allows user to take actions within the repo. 
 repositoryMenu()
 {
-	
+	unzipRepositories
 	local finished=1
 	echo 'Please enter your choice: '
 	while (( finished != 0 )); do
@@ -98,10 +102,10 @@ repositoryMenu()
 	            editFile
 	            ;;
 	        "Rename a File")
-	            echo "you chose choice 2"
+	            renameFile
 	            ;;
 	        "Back to Main Menu")
-	            finished=0 && break
+	            finished=0 && zipRepositories && break
 	            ;;
 	        *) echo "invalid option $REPLY";;
 	    esac
@@ -140,21 +144,55 @@ createFile()
 	fi
 }
 
-#Still needsa lot of work, do during lab
+
 editFile()
 {
 	echo "Please enter the name of the file to be edited: "
-	local fileName
-	read $fileName
+	read  fileToEdit
 
-	if [ -e $fileName > /dev/null 2>&1  ]
+	if [ -e $fileToEdit > /dev/null 2>&1 ];
 	then
-	   nano $fileName
+	     gedit $fileToEdit
 	else
 		echo "This file does not exist"
 	fi
-
 }
 
+renameFile()
+{
+	echo "Please enter the name of the file you would like to rename "
+	read fileToRename
+
+	if [ -e $fileToRename > /dev/null 2>&1 ];
+	then
+	      echo "Please enter the new name for this file"
+	      read newName
+	      if [[ "$newName" =~ \ |\' ]] 
+		then
+			echo "File could not be renamed. File names may not contain spaces or single quotes"
+		else
+	    	mv $fileToRename $newName
+	   		echo "File reanmed"
+		fi
+	else
+		echo "This file does not exist"
+	fi
+}
+
+zipRepositories()
+{
+	cd .. && cd ..
+	if [ -d "Repositories" ]; then
+		gzip -r Repositories
+	fi
+}
+
+unzipRepositories()
+{
+	if [ -d "Repositories" ]; then
+ 	gzip -t Repositories 2>/dev/null
+	[[ $? -eq 0 ]] && echo "Compessed file" || echo "Not compressed"
+    fi
+}
 
 mainMenu
