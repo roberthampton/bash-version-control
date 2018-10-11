@@ -4,7 +4,7 @@ mainMenu(){
 	local logfin=1
 	#This is where they enter the loop, this is kept running in the background while the user works through other menus and it returns to it at the end
 	while (( logfin != 0 )); do
-echo 'Please enter your choice:'
+echo 'Login Menu Options:'
 		#This is the array of options
 		options1=("Login" "Get help" "Quit")
 	#This creates three cases, case 1 is the user logs in, case 2 the user seeks help with the options and case 3 the project completes and closes
@@ -47,12 +47,12 @@ loginOptions()
 		success=0
 	fi
 	#This checks if the user info has been input correct, then logs in
-	if [ $success = 0 > /dev/null 2>&1]; then 
+	if [ $success = 0 > /dev/null 2>&1 ]; then 
 	echo "Welcome back $log"
 	repMenu
-	fi
+
 	#Otherwise, this takes them back to the main menu
-	if [ $success = 1 > /dev/null 2>&1 ]; then
+	else
 	echo "Some of the information you entered is incorrect"
 	fi
 }
